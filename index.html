@@ -382,6 +382,65 @@
     }
     .no-results.show { display: block; }
 
+    /* NOTES */
+    .notes-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-top: 16px;
+      overflow: hidden;
+    }
+    .notes-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 18px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .notes-header-icon {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #facc15;
+      flex-shrink: 0;
+    }
+    .notes-header-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      flex: 1;
+    }
+    .notes-header-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    #notesArea {
+      width: 100%;
+      min-height: 180px;
+      padding: 14px 16px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      resize: vertical;
+      outline: none;
+    }
+    #notesArea::placeholder { color: var(--text-muted); }
+    .notes-footer {
+      padding: 8px 16px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+    }
+    .notes-saved {
+      font-size: 0.75rem;
+      color: var(--success);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .notes-saved.show { opacity: 1; }
+
     @media (max-width: 600px) {
       .block-name { font-size: 0.85rem; }
       .block-actions { padding: 10px 12px; }
@@ -412,6 +471,18 @@
 
   <div id="blocksContainer"></div>
   <div class="no-results" id="noResults">No se encontraron canciones para "<span id="noResultsQuery"></span>"</div>
+
+  <div class="notes-section">
+    <div class="notes-header">
+      <div class="notes-header-icon"></div>
+      <div class="notes-header-title">Canciones adicionales / Notas</div>
+      <div class="notes-header-sub">Se incluye en el PDF</div>
+    </div>
+    <textarea id="notesArea" placeholder="Escribe aquí canciones extra, peticiones, notas para el DJ…&#10;&#10;Ejemplo:&#10;Bésame mucho — Luis Miguel&#10;La Bamba — Ritchie Valens"></textarea>
+    <div class="notes-footer">
+      <span class="notes-saved" id="notesSaved">✓ Guardado</span>
+    </div>
+  </div>
 </main>
 
 <footer>
@@ -425,6 +496,7 @@
 
 <script>
 const STORAGE_KEY = 'cdo_setlist_v1';
+const NOTES_KEY = 'cdo_setlist_notes_v1';
 
 const BLOCK_COLORS = ['#c084fc','#60a5fa','#f472b6','#fb923c','#34d399'];
 
@@ -1035,6 +1107,32 @@ function exportPDF() {
   doc.setTextColor(100,116,139);
   doc.text(`Total: ${grandTotal} canciones seleccionadas`, pageW / 2, y, { align: 'center' });
 
+  // Notes section
+  const notes = (document.getElementById('notesArea').value || '').trim();
+  if (notes) {
+    y += 10;
+    if (y > 260) { doc.addPage(); doc.setFillColor(15,15,19); doc.rect(0,0,210,297,'F'); y = marginT; }
+
+    doc.setFillColor(250, 204, 21, 0.12);
+    doc.roundedRect(marginL, y - 5, usableW, 10, 2, 2, 'F');
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(250, 204, 21);
+    doc.text('CANCIONES ADICIONALES / NOTAS', marginL + 4, y + 1);
+    y += 12;
+
+    const lines = notes.split('\n');
+    lines.forEach(line => {
+      if (y > 272) { doc.addPage(); doc.setFillColor(15,15,19); doc.rect(0,0,210,297,'F'); y = marginT; }
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(226, 232, 240);
+      const wrapped = doc.splitTextToSize(line || ' ', usableW - 6);
+      doc.text(wrapped, marginL + 4, y);
+      y += wrapped.length * 6;
+    });
+  }
+
   doc.save('Setlist-Adriana50-CDO.pdf');
 }
 
@@ -1057,6 +1155,21 @@ function exportPDF() {
     searchEl.value = '';
     applyFilter('');
     searchEl.focus();
+  });
+
+  // Notes persistence
+  const notesArea = document.getElementById('notesArea');
+  const notesSaved = document.getElementById('notesSaved');
+  notesArea.value = localStorage.getItem(NOTES_KEY) || '';
+  let notesTimer;
+  notesArea.addEventListener('input', () => {
+    clearTimeout(notesTimer);
+    notesSaved.classList.remove('show');
+    notesTimer = setTimeout(() => {
+      localStorage.setItem(NOTES_KEY, notesArea.value);
+      notesSaved.classList.add('show');
+      setTimeout(() => notesSaved.classList.remove('show'), 2000);
+    }, 600);
   });
 
   // PDF button
