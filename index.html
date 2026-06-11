@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adriana 50 - CDO · Setlist</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a24;
+      --surface2: #22222f;
+      --border: #2e2e40;
+      --accent: #c084fc;
+      --accent2: #a855f7;
+      --accent-dim: #7c3aed33;
+      --text: #e2e8f0;
+      --text-dim: #94a3b8;
+      --text-muted: #64748b;
+      --checked-bg: #1e133a;
+      --checked-border: #a855f7;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --b1: #c084fc;
+      --b2: #60a5fa;
+      --b3: #f472b6;
+      --b4: #fb923c;
+      --b5: #34d399;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 90px;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #1e0a3c 0%, #0f0f1e 60%, #1a0a2e 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 20px 20px;
+      text-align: center;
+      position: relative;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .event-title {
+      font-size: clamp(1.4rem, 4vw, 2.2rem);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, #e879f9, #a855f7, #c084fc);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 6px;
+    }
+    .event-sub {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* MAIN */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px 16px;
+    }
+
+    /* SEARCH */
+    .search-wrap {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    #search {
+      width: 100%;
+      padding: 12px 42px 12px 42px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    #search:focus { border-color: var(--accent); }
+    #search::placeholder { color: var(--text-muted); }
+    .search-clear {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+      display: none;
+      line-height: 1;
+      border-radius: 4px;
+    }
+    .search-clear:hover { color: var(--text); background: var(--surface2); }
+
+    .session-banner {
+      background: var(--surface);
+      border: 1px solid var(--success);
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: var(--success);
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+    .session-banner.show { display: flex; }
+
+    /* BLOCKS */
+    .block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+    .block:hover { border-color: #3a3a50; }
+
+    .block-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 18px;
+      cursor: pointer;
+      user-select: none;
+      background: var(--surface2);
+      transition: background 0.15s;
+    }
+    .block-header:hover { background: #28283a; }
+
+    .block-color-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .block-title-group { flex: 1; min-width: 0; }
+    .block-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .block-meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .block-counter {
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .block-chevron {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      transition: transform 0.25s;
+      flex-shrink: 0;
+    }
+    .block.open .block-chevron { transform: rotate(180deg); }
+
+    .block-body {
+      display: none;
+      border-top: 1px solid var(--border);
+    }
+    .block.open .block-body { display: block; }
+
+    .block-actions {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .btn-sm {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid;
+      transition: all 0.15s;
+    }
+    .btn-select {
+      background: var(--accent-dim);
+      border-color: var(--accent2);
+      color: var(--accent);
+    }
+    .btn-select:hover { background: #5b21b644; }
+    .btn-clear {
+      background: transparent;
+      border-color: var(--border);
+      color: var(--text-muted);
+    }
+    .btn-clear:hover { background: var(--surface2); color: var(--text); border-color: #4a4a60; }
+
+    /* SONG LIST */
+    .song-list { list-style: none; }
+    .song-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid #1e1e2a;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .song-item:last-child { border-bottom: none; }
+    .song-item:hover { background: var(--surface2); }
+    .song-item.checked { background: var(--checked-bg); }
+    .song-item.hidden { display: none; }
+
+    .song-item input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border);
+      border-radius: 4px;
+      background: transparent;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+      position: relative;
+    }
+    .song-item input[type="checkbox"]:checked {
+      background: var(--accent2);
+      border-color: var(--accent2);
+    }
+    .song-item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 3px;
+      top: 0px;
+      width: 6px;
+      height: 10px;
+      border: 2px solid white;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg);
+    }
+    .song-item.checked input[type="checkbox"] {
+      border-color: var(--checked-border);
+    }
+
+    .song-info { flex: 1; min-width: 0; }
+    .song-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .song-item.checked .song-name { color: var(--accent); }
+    .song-artist {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .song-num {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      min-width: 24px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* EMPTY STATE */
+    .block-empty {
+      padding: 20px 16px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    /* FOOTER */
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 100;
+    }
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+
+    .total-counter {
+      font-size: 0.88rem;
+      color: var(--text-dim);
+    }
+    .total-counter strong {
+      color: var(--accent);
+      font-size: 1.05rem;
+    }
+
+    .btn-pdf {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      background: linear-gradient(135deg, #7c3aed, #a855f7);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 15px #a855f740;
+    }
+    .btn-pdf:hover { transform: translateY(-1px); box-shadow: 0 6px 20px #a855f760; }
+    .btn-pdf:active { transform: translateY(0); }
+    .btn-pdf:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* Search highlight */
+    mark {
+      background: #7c3aed55;
+      color: var(--accent);
+      border-radius: 2px;
+      padding: 0 1px;
+    }
+
+    /* No results */
+    .no-results {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      display: none;
+    }
+    .no-results.show { display: block; }
+
+    @media (max-width: 600px) {
+      .block-name { font-size: 0.85rem; }
+      .block-actions { padding: 10px 12px; }
+      .song-item { padding: 9px 12px; }
+      footer { flex-wrap: wrap; gap: 10px; padding: 10px 14px; }
+      .btn-pdf { padding: 9px 18px; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="event-title">Adriana 50 · CDO</div>
+  <div class="event-sub">Villavicencio, Meta &nbsp;·&nbsp; Sábado 4 de julio de 2026</div>
+</header>
+
+<main>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search" placeholder="Buscar canción o artista…" autocomplete="off" />
+    <button class="search-clear" id="searchClear" title="Limpiar búsqueda">✕</button>
+  </div>
+
+  <div class="session-banner" id="sessionBanner">
+    <span>✓</span> <span>Sesión restaurada — tus selecciones anteriores están activas.</span>
+    <button onclick="this.parentElement.classList.remove('show')" style="margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;font-size:1rem;">✕</button>
+  </div>
+
+  <div id="blocksContainer"></div>
+  <div class="no-results" id="noResults">No se encontraron canciones para "<span id="noResultsQuery"></span>"</div>
+</main>
+
+<footer>
+  <div class="total-counter">
+    <strong id="totalSelected">0</strong> canciones seleccionadas
+  </div>
+  <button class="btn-pdf" id="btnPDF">
+    <span>⬇</span> Exportar Setlist PDF
+  </button>
+</footer>
+
+<script>
+const STORAGE_KEY = 'cdo_setlist_v1';
+
+const BLOCK_COLORS = ['#c084fc','#60a5fa','#f472b6','#fb923c','#34d399'];
+
+const BLOQUES = [
+  {
+    id: "b1",
+    nombre: "BLOQUE 1 — PREVIA",
+    duracion: "120 min",
+    canciones: [
+      { cancion: "Confieso", artista: "Kany Garcia" },
+      { cancion: "En cambio no", artista: "Laura Pausini" },
+      { cancion: "Fui demasiado para ti", artista: "Hanna Rivas" },
+      { cancion: "Aunque sea en otra vida", artista: "Edith Marquez La voz 2021" },
+      { cancion: "Dueles", artista: "Jesse&Joy" },
+      { cancion: "Provenza Acoustic", artista: "Rebeca Luna" },
+      { cancion: "No me doy por vencido", artista: "Luis Fonsi" },
+      { cancion: "Se Fue", artista: "Laura Pausini" },
+      { cancion: "Mi error, Mi fantasia", artista: "Nadia" },
+      { cancion: "Mientes tan bien", artista: "Sin Bandera" },
+      { cancion: "Por Salud Mental", artista: "Yuridia" },
+      { cancion: "Mi Soledad y Yo", artista: "Alejandro Sanz" },
+      { cancion: "Antologia", artista: "Shakira" },
+      { cancion: "Coleccionando Heridas", artista: "KarolG" },
+      { cancion: "Hoy tengo ganas de ti", artista: "Alejandro Fernandez" },
+      { cancion: "La diferencia", artista: "Nadia" },
+      { cancion: "Pero me acuerdo de ti", artista: "Cristina Aguilera" },
+      { cancion: "Hoy ya me voy", artista: "Kany Garcia" },
+      { cancion: "Lo busque", artista: "Ana Barbara" },
+      { cancion: "Supongo que lo sabes", artista: "Ha-Ash" },
+      { cancion: "Alejate de mi", artista: "Camila" },
+      { cancion: "Inevitable", artista: "Shakira" },
+      { cancion: "Lo que son las cosas", artista: "Yuridia" },
+      { cancion: "Un siglo sin ti", artista: "Chayanne" },
+      { cancion: "Me esta doliendo", artista: "Carin Leon" },
+      { cancion: "Te debo", artista: "Hanna Rivas" },
+      { cancion: "Ese hombre es malo", artista: "KarolG" },
+      { cancion: "Lado Fragil", artista: "Carin Leon" },
+      { cancion: "Te dejo en libertad", artista: "Ha-Ash" },
+      { cancion: "Si no te hubieras ido", artista: "Luis Alfonso" },
+      { cancion: "De repente", artista: "Soraya" },
+      { cancion: "Me dedique a Perderte", artista: "Alejandro Fernandez" },
+      { cancion: "Amiga Mia", artista: "KarolG" },
+      { cancion: "Ni me debes, ni te debo", artista: "Carin Leon" },
+      { cancion: "Ya no somos ni seremos", artista: "Cristian Nodal" },
+      { cancion: "Si tu no estas", artista: "Rosana" },
+      { cancion: "Y tu te vas", artista: "Chayanne" },
+      { cancion: "Te Quiero Tanto, Tanto", artista: "Onda Vaselina" },
+      { cancion: "Me cuesta tanto olvidarte", artista: "Mecano" },
+      { cancion: "Sigo aqui", artista: "Lia Monroe" },
+      { cancion: "El achantado", artista: "Juliana" },
+      { cancion: "Golpes en el Corazon", artista: "Paulina Rubio" },
+      { cancion: "Las de la intuicion", artista: "Shakira" },
+      { cancion: "Como me haces falta", artista: "Ana Barbara" },
+      { cancion: "Mi eterno amor secreto", artista: "Marco Antonio Solis" },
+      { cancion: "Tu Carcel", artista: "Enanitos Verdes" },
+      { cancion: "El sol no regresa", artista: "La Quinta Estacion" },
+      { cancion: "No me vuelvo a enamorar", artista: "Natalia Jimenez" },
+      { cancion: "No querias lastimarme", artista: "Gloria Trevi" },
+      { cancion: "Mas que tu amigo", artista: "Marco Antonio Solis" },
+      { cancion: "Bonita", artista: "Lukas Bloom" },
+      { cancion: "El privilegio de Amar", artista: "Mijares, Lucero" },
+      { cancion: "Noviembre sin ti", artista: "Reik" },
+      { cancion: "No hay nadie mas", artista: "Sebastian Yatra" },
+      { cancion: "Ya me entere", artista: "Reik" },
+      { cancion: "100 anos", artista: "Carlos Rivera" },
+      { cancion: "Caraluna", artista: "Bacilos" },
+      { cancion: "Limon y Sal", artista: "Julieta Venegas" },
+      { cancion: "Toda la Vida", artista: "Emmanuel" },
+      { cancion: "No te preocupes por mi", artista: "Edith Marquez" },
+      { cancion: "Ya pa que", artista: "Betzabeth" },
+      { cancion: "Y pa que", artista: "Nadira" },
+      { cancion: "Para Siempre", artista: "Kany Garcia" },
+      { cancion: "Viveme", artista: "Laura Pausini" },
+      { cancion: "Entra en mi vida", artista: "Sin Bandera" },
+      { cancion: "Hoy", artista: "Gloria Estefan" },
+      { cancion: "Me niego", artista: "Reik" },
+      { cancion: "Te esperaba", artista: "Carlos Rivera" },
+      { cancion: "Coleccionista de Canciones", artista: "Camila" },
+      { cancion: "Me equivoque", artista: "Maria Jose" }
+    ]
+  },
+  {
+    id: "b2",
+    nombre: "BLOQUE 2 — CALENTAMIENTO 80s",
+    duracion: "60 min",
+    canciones: [
+      { cancion: "200 Copas", artista: "KarolG" },
+      { cancion: "El Ultimo Adios", artista: "Paulina Rubio" },
+      { cancion: "Un beso y una Flor remasterizado", artista: "Nino Bravo" },
+      { cancion: "Dejaria Todo", artista: "Chayanne" },
+      { cancion: "Tengo todo excepto a ti", artista: "Luis Miguel" },
+      { cancion: "Sera porque Te Amo", artista: "Riccie e Poveri" },
+      { cancion: "Fuiste Tu", artista: "Ricardo Arjona" },
+      { cancion: "Nunca es suficiente", artista: "Angeles Azules" },
+      { cancion: "Hasta que me olvides", artista: "Luis Miguel" },
+      { cancion: "Lamento Boliviano", artista: "Enanitos Verdes" },
+      { cancion: "Rayando el sol", artista: "Mana" },
+      { cancion: "Duele el amor", artista: "Aleks Syntek" },
+      { cancion: "Azul", artista: "Cristian Castro" },
+      { cancion: "Obsesion", artista: "Aventura" },
+      { cancion: "Ahora te puedes marchar", artista: "Luis Miguel" },
+      { cancion: "Me llamas", artista: "Jose Luis Perales" },
+      { cancion: "Amigos no por Favor", artista: "Yuridia" },
+      { cancion: "Lo Aprendi de Ti", artista: "Ha-Ash" },
+      { cancion: "Celos", artista: "Fanny Lu" },
+      { cancion: "Dia de suerte", artista: "Alejandra Guzman" },
+      { cancion: "No Podras", artista: "Cristian Castro" },
+      { cancion: "Otro dia mas sin verte", artista: "Jon Secada" },
+      { cancion: "Corazon Partio", artista: "Alejandro Sanz" },
+      { cancion: "No me ensenaste", artista: "Thalia" },
+      { cancion: "Mientes", artista: "Camila" },
+      { cancion: "Me muero por besarte", artista: "La Quinta Estacion" },
+      { cancion: "Ni una sola palabra", artista: "Paulina Rubio" },
+      { cancion: "Solo quedate en silencio", artista: "RBD" },
+      { cancion: "Mis ojos lloran por ti", artista: "Big Boy" },
+      { cancion: "Ese hombre es mio", artista: "Paulina Rubio" },
+      { cancion: "Dame un beso", artista: "Yuri" },
+      { cancion: "Vivir asi es morir de amor", artista: "Camilo Sesto" },
+      { cancion: "Creo en mi", artista: "Natalia Jimenez" },
+      { cancion: "La incondicional", artista: "Luis Miguel" },
+      { cancion: "Noche de copas", artista: "Maria Conchita Alonso" },
+      { cancion: "Tanto la Queria", artista: "Andy & Lucas" },
+      { cancion: "Me quedare solo", artista: "Amistades Peligrosas" },
+      { cancion: "Salvame", artista: "RBD" },
+      { cancion: "Besos de ceniza", artista: "Timbiriche" },
+      { cancion: "Es mejor asi", artista: "Cristian Castro" },
+      { cancion: "Rosas", artista: "La Oreja Van Gogh" },
+      { cancion: "Un beso y una Flor", artista: "Nino Bravo" },
+      { cancion: "A chillar a otra parte", artista: "Pesado" },
+      { cancion: "Lo que tenias conmigo", artista: "Maria Jose" }
+    ]
+  },
+  {
+    id: "b3",
+    nombre: "BLOQUE 3 — CORE",
+    duracion: "60 min",
+    canciones: [
+      { cancion: "Maldita Primavera", artista: "Yuri" },
+      { cancion: "Asi no te Amara Jamas", artista: "Amanda Miguel" },
+      { cancion: "Como tu mujer", artista: "Rocio Durcal" },
+      { cancion: "El cigarrillo", artista: "Ana Gabriel" },
+      { cancion: "Ya te Olvide", artista: "Yuridia" },
+      { cancion: "Tu lo decidiste", artista: "Ana Gabriel" },
+      { cancion: "Basta ya", artista: "Olga Tanon" },
+      { cancion: "Que Agonia", artista: "Yuridia" },
+      { cancion: "Es Demasiado Tarde", artista: "Ana Gabriel" },
+      { cancion: "El me mintio", artista: "Amanda Miguel" },
+      { cancion: "Como te va mi amor", artista: "Pandora" },
+      { cancion: "Asi Fue", artista: "Isabel Pantoja" },
+      { cancion: "Detras de mi ventana", artista: "Yuri" },
+      { cancion: "Quien como tu", artista: "Ana Gabriel" },
+      { cancion: "Hacer el amor con otro", artista: "Alejandra Guzman" },
+      { cancion: "Cosas del Amor", artista: "Ana Gabriel" },
+      { cancion: "Se como duele", artista: "Karina" },
+      { cancion: "Sola con mi soledad", artista: "Marisela" },
+      { cancion: "La gata bajo la lluvia", artista: "Rocio Durcal" },
+      { cancion: "Y aqui estoy", artista: "Ana Gabriel" },
+      { cancion: "Que ganas de no verte nunca mas", artista: "Jenny Rivera" },
+      { cancion: "Simplemente Amigos", artista: "Ana Gabriel" },
+      { cancion: "Tu dama de hierro", artista: "Marisela" },
+      { cancion: "Olvidame y Pega la Vuelta", artista: "Pimpinela" },
+      { cancion: "Costumbres", artista: "Rocio Durcal" },
+      { cancion: "Con los ojos cerrados", artista: "Gloria Trevi" },
+      { cancion: "Sin el", artista: "Pandora" },
+      { cancion: "No entiendo", artista: "Ana Gabriel" },
+      { cancion: "De mi enamorate", artista: "Daniela Romo" },
+      { cancion: "A esa", artista: "Pimpinela" },
+      { cancion: "Senor", artista: "Helenita Vargas" },
+      { cancion: "Sin Llorar", artista: "Yuridia" },
+      { cancion: "Adicta al dolor", artista: "Marbelle" },
+      { cancion: "No te pido mas", artista: "Helenita Vargas" },
+      { cancion: "Aqui murio el amor", artista: "Paola Jara" },
+      { cancion: "El hombre que yo amo", artista: "Myriam Hernandez" },
+      { cancion: "Potpurri Juan Gabriel", artista: "Pandora" },
+      { cancion: "Demasiado Tarde", artista: "Ana Gabriel" },
+      { cancion: "Ese hombre", artista: "Rocio Jurado" },
+      { cancion: "A que no le cuentas", artista: "Edna Nazario" }
+    ]
+  },
+  {
+    id: "b4",
+    nombre: "BLOQUE 4 — HORA LOCA",
+    duracion: "60 min",
+    canciones: [
+      { cancion: "Hasta La Madre", artista: "Yeison Jimenez" },
+      { cancion: "Bandido", artista: "Ana Barbara" },
+      { cancion: "Como La Flor", artista: "Selena" },
+      { cancion: "Se vale", artista: "Fanny Lu" },
+      { cancion: "Es mentiroso ese hombre", artista: "Olga Tanon" },
+      { cancion: "Rebelde", artista: "RBD" },
+      { cancion: "Todos me miran", artista: "Gloria Trevi" },
+      { cancion: "A quien le importa", artista: "Thalia" },
+      { cancion: "Quitame ese hombre del corazon", artista: "Pilar Montenegro" },
+      { cancion: "Si una vez", artista: "Selena" },
+      { cancion: "Pelo Suelto", artista: "Gloria Trevi" },
+      { cancion: "Torero", artista: "Chayanne" },
+      { cancion: "Musics Sesions #53", artista: "Shakira" },
+      { cancion: "Claridad", artista: "Menudo" },
+      { cancion: "TQG", artista: "Shakira" },
+      { cancion: "Amor Prohibido", artista: "Selena" },
+      { cancion: "Perro Fiel", artista: "Shakira" },
+      { cancion: "Todavia", artista: "La Factoria" },
+      { cancion: "La mordidita", artista: "Ricky Martin" },
+      { cancion: "Desde esa noche", artista: "Thalia" },
+      { cancion: "Despecha", artista: "Rosalia" },
+      { cancion: "Latina Foreva", artista: "KarolG" },
+      { cancion: "A puro dolor", artista: "Son by Four" },
+      { cancion: "Tu no eres para mi", artista: "Fanny Lu" },
+      { cancion: "Perdoname", artista: "La Factoria" },
+      { cancion: "Bibiriribambam", artista: "Selena" },
+      { cancion: "Danza Kuduro", artista: "Don Omar" },
+      { cancion: "El la engano", artista: "Natusha" },
+      { cancion: "Tu la tienes que pagar", artista: "Natucha" },
+      { cancion: "Dame otro tequila", artista: "Thalia" },
+      { cancion: "Guaro", artista: "Pipe Bueno" },
+      { cancion: "Eternamente Bella", artista: "Alejandra Guzman" },
+      { cancion: "Another Night", artista: "Proyecto Uno" },
+      { cancion: "Mami", artista: "Becky G" },
+      { cancion: "Potpurri", artista: "Pandora" },
+      { cancion: "Pa tipos como tu", artista: "Shakira" }
+    ]
+  },
+  {
+    id: "b5",
+    nombre: "BLOQUE 5 — CIERRE",
+    duracion: "45 min",
+    canciones: [
+      { cancion: "Te lo agradezco", artista: "Kany Garcia" },
+      { cancion: "El beneficio de la duda", artista: "Grupo Firme" },
+      { cancion: "DPM", artista: "Kany Garcia" },
+      { cancion: "Salud por el", artista: "Paola Jara" },
+      { cancion: "Pero yo si", artista: "Carin Leon" },
+      { cancion: "Hoja en blanco (regional)", artista: "Hanna Rivas" },
+      { cancion: "Olvidala", artista: "Jorge Celedon y Ana Barbara" },
+      { cancion: "Ya superame", artista: "Grupo Firme" },
+      { cancion: "Yo ya no vuelvo contigo", artista: "Grupo Firme" },
+      { cancion: "Le creo", artista: "Gloria Trevi" },
+      { cancion: "Que siente ser feliz", artista: "Grupo Firme" },
+      { cancion: "No la beses", artista: "Yuridia" },
+      { cancion: "Pobre Perro", artista: "Paola Jara" },
+      { cancion: "Si tu amor no vuelve", artista: "Binomio de America" },
+      { cancion: "Un Osito Dormilon", artista: "Binomio de America" },
+      { cancion: "Me bebi tu recuerdo", artista: "Galy Galeano" },
+      { cancion: "Brindis", artista: "Thalia" },
+      { cancion: "Adios amor", artista: "Cristian Nodal" },
+      { cancion: "De los besos que te di", artista: "Cristian Nodal" },
+      { cancion: "Mala Mujer", artista: "Paola Jara" },
+      { cancion: "No se va", artista: "Grupo Frontera" },
+      { cancion: "Te hubieras ido antes", artista: "Julion Alvarez" },
+      { cancion: "Que te quieran bonito", artista: "Grupo Firme" },
+      { cancion: "El aventurero", artista: "Yeison Jimenez" },
+      { cancion: "Como Duele el frio", artista: "Dayanara" },
+      { cancion: "Mi ultimo deseo", artista: "Banda Recoditos" },
+      { cancion: "La Farsante", artista: "Juan Gabriel" },
+      { cancion: "Mentiras", artista: "Daniela Romo" },
+      { cancion: "Yo no soy esa mujer", artista: "Paulina Rubio" },
+      { cancion: "Yo no te pido la luna", artista: "Daniela Romo" },
+      { cancion: "Dejame Vivir", artista: "Rocio Durcal y Juan Gabriel" },
+      { cancion: "La Bikina en vivo", artista: "Luis Miguel" },
+      { cancion: "Hasta que te conoci", artista: "Juan Gabriel" },
+      { cancion: "Asi es la vida", artista: "Elefante" },
+      { cancion: "Vivir Sin Aire", artista: "Mana" },
+      { cancion: "Si tu no vuelves", artista: "Miguel Bose" },
+      { cancion: "La media vuelta", artista: "Luis Miguel" },
+      { cancion: "Rumores", artista: "Joan Sebastian" },
+      { cancion: "Monton de Estrellas", artista: "Polo Montanez" },
+      { cancion: "Tusa", artista: "KarolG" },
+      { cancion: "Ya no me duele mas", artista: "Silvestre Dangon" }
+    ]
+  }
+];
+
+// ── State ────────────────────────────────────────────────────────────────────
+const state = {
+  selected: {}, // { "b1-0": true, "b2-3": true, ... }
+  query: ''
+};
+
+function stateKey(blockId, idx) { return `${blockId}-${idx}`; }
+
+// ── LocalStorage ─────────────────────────────────────────────────────────────
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.selected));
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (typeof parsed === 'object' && parsed !== null) {
+        state.selected = parsed;
+        return Object.keys(parsed).length > 0;
+      }
+    }
+  } catch(e) {}
+  return false;
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function highlight(text, query) {
+  if (!query) return escHtml(text);
+  const safe = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return escHtml(text).replace(new RegExp(safe, 'gi'), m => `<mark>${m}</mark>`);
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function buildUI() {
+  const container = document.getElementById('blocksContainer');
+  container.innerHTML = '';
+
+  BLOQUES.forEach((bloque, bi) => {
+    const color = BLOCK_COLORS[bi];
+    const blockEl = document.createElement('div');
+    blockEl.className = 'block open';
+    blockEl.id = `block-${bloque.id}`;
+
+    blockEl.innerHTML = `
+      <div class="block-header" data-block="${bloque.id}">
+        <div class="block-color-dot" style="background:${color}"></div>
+        <div class="block-title-group">
+          <div class="block-name">${escHtml(bloque.nombre)}</div>
+          <div class="block-meta">${bloque.duracion} &nbsp;·&nbsp; ${bloque.canciones.length} canciones</div>
+        </div>
+        <div class="block-counter" id="counter-${bloque.id}" style="color:${color};background:${color}22">0 / ${bloque.canciones.length}</div>
+        <span class="block-chevron">▼</span>
+      </div>
+      <div class="block-body">
+        <div class="block-actions">
+          <button class="btn-sm btn-select" data-action="selectAll" data-block="${bloque.id}">Seleccionar todas</button>
+          <button class="btn-sm btn-clear" data-action="clearAll" data-block="${bloque.id}">Limpiar</button>
+        </div>
+        <ul class="song-list" id="list-${bloque.id}">
+          ${bloque.canciones.map((c, i) => `
+            <li class="song-item" data-block="${bloque.id}" data-idx="${i}" id="song-${bloque.id}-${i}">
+              <input type="checkbox" id="chk-${bloque.id}-${i}" data-block="${bloque.id}" data-idx="${i}" />
+              <div class="song-info">
+                <div class="song-name" id="sname-${bloque.id}-${i}">${escHtml(c.cancion)}</div>
+                <div class="song-artist" id="sartist-${bloque.id}-${i}">${escHtml(c.artista)}</div>
+              </div>
+              <div class="song-num">${i + 1}</div>
+            </li>
+          `).join('')}
+        </ul>
+        <div class="block-empty" id="empty-${bloque.id}">No hay coincidencias en este bloque.</div>
+      </div>
+    `;
+
+    container.appendChild(blockEl);
+  });
+
+  // Events: block header toggle
+  container.querySelectorAll('.block-header').forEach(h => {
+    h.addEventListener('click', e => {
+      if (e.target.closest('button')) return;
+      const blockEl = h.closest('.block');
+      blockEl.classList.toggle('open');
+    });
+  });
+
+  // Events: action buttons
+  container.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const { action, block } = btn.dataset;
+      const bloque = BLOQUES.find(b => b.id === block);
+      if (!bloque) return;
+
+      if (action === 'selectAll') {
+        bloque.canciones.forEach((_, i) => {
+          const item = document.getElementById(`song-${block}-${i}`);
+          if (item && !item.classList.contains('hidden')) {
+            state.selected[stateKey(block, i)] = true;
+          }
+        });
+      } else if (action === 'clearAll') {
+        bloque.canciones.forEach((_, i) => {
+          delete state.selected[stateKey(block, i)];
+        });
+      }
+      saveState();
+      refreshChecks();
+      updateCounters();
+    });
+  });
+
+  // Events: checkboxes and song rows
+  container.querySelectorAll('.song-item').forEach(item => {
+    item.addEventListener('click', e => {
+      const { block, idx } = item.dataset;
+      const key = stateKey(block, idx);
+      if (state.selected[key]) {
+        delete state.selected[key];
+      } else {
+        state.selected[key] = true;
+      }
+      saveState();
+      refreshItemCheck(block, parseInt(idx));
+      updateCounters();
+    });
+  });
+
+  // Prevent checkbox from double-firing
+  container.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+    chk.addEventListener('click', e => e.stopPropagation());
+    chk.addEventListener('change', e => e.stopPropagation());
+  });
+}
+
+function refreshItemCheck(blockId, idx) {
+  const key = stateKey(blockId, idx);
+  const item = document.getElementById(`song-${blockId}-${idx}`);
+  const chk = document.getElementById(`chk-${blockId}-${idx}`);
+  if (!item || !chk) return;
+  const checked = !!state.selected[key];
+  chk.checked = checked;
+  item.classList.toggle('checked', checked);
+}
+
+function refreshChecks() {
+  BLOQUES.forEach(b => {
+    b.canciones.forEach((_, i) => refreshItemCheck(b.id, i));
+  });
+}
+
+function updateCounters() {
+  let total = 0;
+  BLOQUES.forEach(b => {
+    let cnt = 0;
+    b.canciones.forEach((_, i) => {
+      if (state.selected[stateKey(b.id, i)]) cnt++;
+    });
+    total += cnt;
+    const el = document.getElementById(`counter-${b.id}`);
+    if (el) el.textContent = `${cnt} / ${b.canciones.length}`;
+  });
+  document.getElementById('totalSelected').textContent = total;
+  document.getElementById('btnPDF').disabled = total === 0;
+}
+
+// ── Search ───────────────────────────────────────────────────────────────────
+function applyFilter(query) {
+  state.query = query.trim().toLowerCase();
+  const clearBtn = document.getElementById('searchClear');
+  clearBtn.style.display = state.query ? 'block' : 'none';
+
+  let anyVisible = false;
+
+  BLOQUES.forEach(b => {
+    let blockHasVisible = false;
+    b.canciones.forEach((c, i) => {
+      const item = document.getElementById(`song-${b.id}-${i}`);
+      if (!item) return;
+      const matches = !state.query ||
+        c.cancion.toLowerCase().includes(state.query) ||
+        c.artista.toLowerCase().includes(state.query);
+
+      item.classList.toggle('hidden', !matches);
+
+      if (matches) {
+        blockHasVisible = true;
+        anyVisible = true;
+        document.getElementById(`sname-${b.id}-${i}`).innerHTML = highlight(c.cancion, state.query);
+        document.getElementById(`sartist-${b.id}-${i}`).innerHTML = highlight(c.artista, state.query);
+      }
+    });
+
+    const blockEl = document.getElementById(`block-${b.id}`);
+    const emptyEl = document.getElementById(`empty-${b.id}`);
+    if (state.query) {
+      blockEl.style.display = blockHasVisible ? '' : 'none';
+      if (emptyEl) emptyEl.style.display = blockHasVisible ? 'none' : 'block';
+    } else {
+      blockEl.style.display = '';
+      if (emptyEl) emptyEl.style.display = 'none';
+    }
+  });
+
+  const noResults = document.getElementById('noResults');
+  if (!anyVisible && state.query) {
+    noResults.classList.add('show');
+    document.getElementById('noResultsQuery').textContent = state.query;
+  } else {
+    noResults.classList.remove('show');
+  }
+}
+
+// ── PDF Export ───────────────────────────────────────────────────────────────
+function exportPDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('Cargando librería PDF, por favor intenta de nuevo en unos segundos.');
+    return;
+  }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+
+  const pageW = 210;
+  const marginL = 18, marginR = 18, marginT = 20;
+  const usableW = pageW - marginL - marginR;
+  let y = marginT;
+
+  // Title
+  doc.setFillColor(15, 15, 19);
+  doc.rect(0, 0, 210, 297, 'F');
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(20);
+  doc.setTextColor(192, 132, 252);
+  doc.text('Adriana 50 - CDO', pageW / 2, y, { align: 'center' });
+  y += 8;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(148, 163, 184);
+  doc.text('Setlist  ·  Sábado 4 de julio de 2026  ·  Villavicencio, Meta', pageW / 2, y, { align: 'center' });
+  y += 3;
+
+  // Divider
+  doc.setDrawColor(168, 85, 247);
+  doc.setLineWidth(0.5);
+  doc.line(marginL, y, pageW - marginR, y);
+  y += 8;
+
+  const COLORS_RGB = [
+    [192,132,252],[96,165,250],[244,114,182],[251,146,60],[52,211,153]
+  ];
+
+  let grandTotal = 0;
+
+  BLOQUES.forEach((b, bi) => {
+    const selected = b.canciones.filter((_, i) => !!state.selected[stateKey(b.id, i)]);
+    if (selected.length === 0) return;
+    grandTotal += selected.length;
+
+    // Check page space for header
+    if (y > 260) {
+      doc.addPage();
+      doc.setFillColor(15, 15, 19);
+      doc.rect(0, 0, 210, 297, 'F');
+      y = marginT;
+    }
+
+    const [r,g,bv] = COLORS_RGB[bi];
+
+    // Block header
+    doc.setFillColor(r, g, bv, 0.15);
+    doc.roundedRect(marginL, y - 5, usableW, 10, 2, 2, 'F');
+
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.setTextColor(r, g, bv);
+    doc.text(b.nombre, marginL + 4, y + 1);
+
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`${selected.length} canciones`, pageW - marginR - 2, y + 1, { align: 'right' });
+
+    y += 12;
+
+    // Songs
+    selected.forEach((c, idx) => {
+      if (y > 272) {
+        doc.addPage();
+        doc.setFillColor(15, 15, 19);
+        doc.rect(0, 0, 210, 297, 'F');
+        y = marginT;
+      }
+
+      // Alternating row bg
+      if (idx % 2 === 0) {
+        doc.setFillColor(26, 26, 36);
+        doc.rect(marginL, y - 4, usableW, 7, 'F');
+      }
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.5);
+      doc.setTextColor(200, 200, 210);
+      doc.text(`${idx + 1}.`, marginL + 2, y);
+
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(226, 232, 240);
+      doc.text(c.cancion, marginL + 10, y);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 116, 139);
+      const nameWidth = doc.getTextWidth(c.cancion);
+      doc.text(` — ${c.artista}`, marginL + 10 + nameWidth, y);
+
+      y += 7;
+    });
+
+    y += 4;
+  });
+
+  // Footer total
+  if (y > 270) { doc.addPage(); doc.setFillColor(15,15,19); doc.rect(0,0,210,297,'F'); y = 20; }
+  y += 4;
+  doc.setDrawColor(168, 85, 247);
+  doc.setLineWidth(0.3);
+  doc.line(marginL, y, pageW - marginR, y);
+  y += 6;
+  doc.setFont('helvetica', 'italic');
+  doc.setFontSize(8);
+  doc.setTextColor(100,116,139);
+  doc.text(`Total: ${grandTotal} canciones seleccionadas`, pageW / 2, y, { align: 'center' });
+
+  doc.save('Setlist-Adriana50-CDO.pdf');
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+(function init() {
+  buildUI();
+  const hadSaved = loadState();
+  refreshChecks();
+  updateCounters();
+
+  if (hadSaved) {
+    document.getElementById('sessionBanner').classList.add('show');
+  }
+
+  // Search
+  const searchEl = document.getElementById('search');
+  searchEl.addEventListener('input', () => applyFilter(searchEl.value));
+
+  document.getElementById('searchClear').addEventListener('click', () => {
+    searchEl.value = '';
+    applyFilter('');
+    searchEl.focus();
+  });
+
+  // PDF button
+  document.getElementById('btnPDF').addEventListener('click', exportPDF);
+  document.getElementById('btnPDF').disabled = true;
+})();
+</script>
+
+<!-- jsPDF via CDN — loaded async, only needed when exporting -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" async></script>
+
+</body>
+</html>
