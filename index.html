@@ -346,6 +346,22 @@
       font-size: 1.05rem;
     }
 
+    .footer-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+    }
+    .drive-status {
+      font-size: 0.75rem;
+      min-height: 16px;
+      text-align: right;
+    }
+    .drive-status.loading { color: var(--text-muted); }
+    .drive-status.ok { color: var(--success); }
+    .drive-status.ok a { color: var(--success); }
+    .drive-status.err { color: #f87171; }
+
     .btn-pdf {
       display: flex;
       align-items: center;
@@ -489,14 +505,20 @@
   <div class="total-counter">
     <strong id="totalSelected">0</strong> canciones seleccionadas
   </div>
-  <button class="btn-pdf" id="btnPDF">
-    <span>⬇</span> Exportar Setlist PDF
-  </button>
+  <div class="footer-right">
+    <div class="drive-status" id="driveStatus"></div>
+    <button class="btn-pdf" id="btnPDF">
+      <span>☁</span> Guardar Setlist en Drive
+    </button>
+  </div>
 </footer>
 
 <script>
 const STORAGE_KEY = 'cdo_setlist_v1';
 const NOTES_KEY = 'cdo_setlist_notes_v1';
+
+// ── Pega aquí la URL del Apps Script desplegado ──────────────────────────────
+const SCRIPT_URL = 'PEGAR_URL_AQUI';
 
 const BLOCK_COLORS = ['#c084fc','#60a5fa','#f472b6','#fb923c','#34d399'];
 
@@ -987,12 +1009,8 @@ function applyFilter(query) {
   }
 }
 
-// ── PDF Export ───────────────────────────────────────────────────────────────
-function exportPDF() {
-  if (typeof window.jspdf === 'undefined') {
-    alert('Cargando librería PDF, por favor intenta de nuevo en unos segundos.');
-    return;
-  }
+// ── PDF Builder (shared) ─────────────────────────────────────────────────────
+function buildPDFDoc() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
 
@@ -1001,7 +1019,6 @@ function exportPDF() {
   const usableW = pageW - marginL - marginR;
   let y = marginT;
 
-  // Title
   doc.setFillColor(15, 15, 19);
   doc.rect(0, 0, 210, 297, 'F');
 
@@ -1017,7 +1034,6 @@ function exportPDF() {
   doc.text('Setlist  ·  Sábado 4 de julio de 2026  ·  Villavicencio, Meta', pageW / 2, y, { align: 'center' });
   y += 3;
 
-  // Divider
   doc.setDrawColor(168, 85, 247);
   doc.setLineWidth(0.5);
   doc.line(marginL, y, pageW - marginR, y);
@@ -1034,7 +1050,6 @@ function exportPDF() {
     if (selected.length === 0) return;
     grandTotal += selected.length;
 
-    // Check page space for header
     if (y > 260) {
       doc.addPage();
       doc.setFillColor(15, 15, 19);
@@ -1043,8 +1058,6 @@ function exportPDF() {
     }
 
     const [r,g,bv] = COLORS_RGB[bi];
-
-    // Block header
     doc.setFillColor(r, g, bv, 0.15);
     doc.roundedRect(marginL, y - 5, usableW, 10, 2, 2, 'F');
 
@@ -1057,10 +1070,8 @@ function exportPDF() {
     doc.setFontSize(8);
     doc.setTextColor(100, 116, 139);
     doc.text(`${selected.length} canciones`, pageW - marginR - 2, y + 1, { align: 'right' });
-
     y += 12;
 
-    // Songs
     selected.forEach((c, idx) => {
       if (y > 272) {
         doc.addPage();
@@ -1068,34 +1079,26 @@ function exportPDF() {
         doc.rect(0, 0, 210, 297, 'F');
         y = marginT;
       }
-
-      // Alternating row bg
       if (idx % 2 === 0) {
         doc.setFillColor(26, 26, 36);
         doc.rect(marginL, y - 4, usableW, 7, 'F');
       }
-
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.5);
       doc.setTextColor(200, 200, 210);
       doc.text(`${idx + 1}.`, marginL + 2, y);
-
       doc.setFont('helvetica', 'bold');
       doc.setTextColor(226, 232, 240);
       doc.text(c.cancion, marginL + 10, y);
-
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(100, 116, 139);
-      const nameWidth = doc.getTextWidth(c.cancion);
-      doc.text(` — ${c.artista}`, marginL + 10 + nameWidth, y);
-
+      doc.text(` — ${c.artista}`, marginL + 10 + doc.getTextWidth(c.cancion), y);
       y += 7;
     });
 
     y += 4;
   });
 
-  // Footer total
   if (y > 270) { doc.addPage(); doc.setFillColor(15,15,19); doc.rect(0,0,210,297,'F'); y = 20; }
   y += 4;
   doc.setDrawColor(168, 85, 247);
@@ -1107,12 +1110,10 @@ function exportPDF() {
   doc.setTextColor(100,116,139);
   doc.text(`Total: ${grandTotal} canciones seleccionadas`, pageW / 2, y, { align: 'center' });
 
-  // Notes section
   const notes = (document.getElementById('notesArea').value || '').trim();
   if (notes) {
     y += 10;
     if (y > 260) { doc.addPage(); doc.setFillColor(15,15,19); doc.rect(0,0,210,297,'F'); y = marginT; }
-
     doc.setFillColor(250, 204, 21, 0.12);
     doc.roundedRect(marginL, y - 5, usableW, 10, 2, 2, 'F');
     doc.setFont('helvetica', 'bold');
@@ -1120,9 +1121,7 @@ function exportPDF() {
     doc.setTextColor(250, 204, 21);
     doc.text('CANCIONES ADICIONALES / NOTAS', marginL + 4, y + 1);
     y += 12;
-
-    const lines = notes.split('\n');
-    lines.forEach(line => {
+    notes.split('\n').forEach(line => {
       if (y > 272) { doc.addPage(); doc.setFillColor(15,15,19); doc.rect(0,0,210,297,'F'); y = marginT; }
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(8.5);
@@ -1133,7 +1132,53 @@ function exportPDF() {
     });
   }
 
-  doc.save('Setlist-Adriana50-CDO.pdf');
+  return doc;
+}
+
+// ── Save to Drive ────────────────────────────────────────────────────────────
+async function saveToDrive() {
+  if (typeof window.jspdf === 'undefined') {
+    setDriveStatus('err', 'Libreria PDF aun cargando, intenta de nuevo.');
+    return;
+  }
+  if (SCRIPT_URL === 'PEGAR_URL_AQUI') {
+    setDriveStatus('err', 'Falta configurar la URL del Apps Script.');
+    return;
+  }
+
+  const btn = document.getElementById('btnPDF');
+  btn.disabled = true;
+  setDriveStatus('loading', 'Generando y enviando a Drive...');
+
+  try {
+    const doc = buildPDFDoc();
+    const now = new Date();
+    const stamp = now.toISOString().slice(0,16).replace('T','-').replace(':','h');
+    const filename = `Setlist-Adriana50-CDO-${stamp}.pdf`;
+    const base64 = doc.output('datauristring').split(',')[1];
+
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ pdf: base64, filename }),
+    });
+    const result = await resp.json();
+
+    if (result.ok) {
+      setDriveStatus('ok', `Guardado: <a href="${result.url}" target="_blank">${result.name}</a>`);
+    } else {
+      setDriveStatus('err', 'Error al guardar: ' + (result.error || 'desconocido'));
+    }
+  } catch (e) {
+    setDriveStatus('err', 'Error de red. Revisa la URL del script.');
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function setDriveStatus(type, html) {
+  const el = document.getElementById('driveStatus');
+  el.className = 'drive-status ' + type;
+  el.innerHTML = html;
 }
 
 // ── Init ─────────────────────────────────────────────────────────────────────
@@ -1172,8 +1217,8 @@ function exportPDF() {
     }, 600);
   });
 
-  // PDF button
-  document.getElementById('btnPDF').addEventListener('click', exportPDF);
+  // Drive button
+  document.getElementById('btnPDF').addEventListener('click', saveToDrive);
   document.getElementById('btnPDF').disabled = true;
 })();
 </script>
