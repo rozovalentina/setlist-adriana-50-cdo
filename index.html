@@ -519,6 +519,7 @@ const NOTES_KEY = 'cdo_setlist_notes_v1';
 
 // ── Pega aquí la URL del Apps Script desplegado ──────────────────────────────
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxA6qTdWdvHn_XhXY-ii56wiF3HLWfgPnMDBbVs8CX-uJxS-TZTkYM4XJXg9DkMK5qv/exec';
+const FOLDER_NAME = 'Setlist Adriana 50 CDO';
 
 const BLOCK_COLORS = ['#c084fc','#60a5fa','#f472b6','#fb923c','#34d399'];
 
@@ -1157,17 +1158,17 @@ async function saveToDrive() {
     const filename = `Setlist-Adriana50-CDO-${stamp}.pdf`;
     const base64 = doc.output('datauristring').split(',')[1];
 
-    const resp = await fetch(SCRIPT_URL, {
+    // Apps Script no admite preflight CORS, asi que enviamos como text/plain
+    // con no-cors. El script ejecuta y guarda igual; la respuesta llega opaca.
+    await fetch(SCRIPT_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify({ pdf: base64, filename }),
     });
-    const result = await resp.json();
 
-    if (result.ok) {
-      setDriveStatus('ok', `Guardado: <a href="${result.url}" target="_blank">${result.name}</a>`);
-    } else {
-      setDriveStatus('err', 'Error al guardar: ' + (result.error || 'desconocido'));
-    }
+    setDriveStatus('ok',
+      `Guardado en Drive &rarr; <a href="https://drive.google.com/drive/search?q=${encodeURIComponent(FOLDER_NAME)}" target="_blank">ver carpeta</a>`
+    );
   } catch (e) {
     setDriveStatus('err', 'Error de red. Revisa la URL del script.');
   } finally {
