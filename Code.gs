@@ -1,37 +1,35 @@
 // Google Apps Script — backend para guardar setlists en Drive
-// Instrucciones:
-//   1. Ve a https://script.google.com → Nuevo proyecto
-//   2. Reemplaza el contenido con este archivo
-//   3. Click en "Implementar" → "Nueva implementación"
-//   4. Tipo: Aplicacion web
-//      Ejecutar como: Yo
-//      Quienes tienen acceso: Cualquier persona
-//   5. Copia la URL generada y pegala en index.html como SCRIPT_URL
+// IMPORTANTE: Implementar como:
+//   Ejecutar como: Yo
+//   Quienes tienen acceso: Cualquier persona  ← debe ser esta opcion exacta
 
 const FOLDER_NAME = 'Setlist Adriana 50 CDO';
 
 function doPost(e) {
   try {
-    const data = JSON.parse(e.postData.contents);
-    const base64 = data.pdf;
-    const filename = data.filename || 'Setlist.pdf';
+    var base64, filename;
 
-    // Find or create the Drive folder
-    const folders = DriveApp.getFoldersByName(FOLDER_NAME);
-    const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(FOLDER_NAME);
+    // Recibe datos desde form HTML (e.parameter.data)
+    if (e.parameter && e.parameter.data) {
+      var parsed = JSON.parse(e.parameter.data);
+      base64   = parsed.pdf;
+      filename = parsed.filename || 'Setlist.pdf';
+    } else {
+      // Fallback: JSON body directo
+      var body = JSON.parse(e.postData.contents);
+      base64   = body.pdf;
+      filename = body.filename || 'Setlist.pdf';
+    }
 
-    // Decode and save
-    const bytes = Utilities.base64Decode(base64);
-    const blob = Utilities.newBlob(bytes, 'application/pdf', filename);
-    const file = folder.createFile(blob);
+    var folders = DriveApp.getFoldersByName(FOLDER_NAME);
+    var folder  = folders.hasNext() ? folders.next() : DriveApp.createFolder(FOLDER_NAME);
+
+    var bytes = Utilities.base64Decode(base64);
+    var blob  = Utilities.newBlob(bytes, 'application/pdf', filename);
+    var file  = folder.createFile(blob);
 
     return ContentService
-      .createTextOutput(JSON.stringify({
-        ok: true,
-        url: file.getUrl(),
-        name: file.getName(),
-        id: file.getId()
-      }))
+      .createTextOutput(JSON.stringify({ ok: true, url: file.getUrl(), name: file.getName() }))
       .setMimeType(ContentService.MimeType.JSON);
 
   } catch (err) {
@@ -41,7 +39,6 @@ function doPost(e) {
   }
 }
 
-// Health check
 function doGet(e) {
   return ContentService
     .createTextOutput(JSON.stringify({ ok: true }))

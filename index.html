@@ -1158,13 +1158,8 @@ async function saveToDrive() {
     const filename = `Setlist-Adriana50-CDO-${stamp}.pdf`;
     const base64 = doc.output('datauristring').split(',')[1];
 
-    // Apps Script no admite preflight CORS, asi que enviamos como text/plain
-    // con no-cors. El script ejecuta y guarda igual; la respuesta llega opaca.
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify({ pdf: base64, filename }),
-    });
+    // Form + iframe oculto: no aplica CORS (es navegacion, no XHR)
+    await postViaForm(SCRIPT_URL, { data: JSON.stringify({ pdf: base64, filename }) });
 
     setDriveStatus('ok',
       `Guardado en Drive &rarr; <a href="https://drive.google.com/drive/search?q=${encodeURIComponent(FOLDER_NAME)}" target="_blank">ver carpeta</a>`
@@ -1174,6 +1169,42 @@ async function saveToDrive() {
   } finally {
     btn.disabled = false;
   }
+}
+
+function postViaForm(url, fields) {
+  return new Promise((resolve) => {
+    const iframeName = 'gs-upload-' + Date.now();
+
+    const iframe = document.createElement('iframe');
+    iframe.name = iframeName;
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
+    document.body.appendChild(iframe);
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = url;
+    form.target = iframeName;
+    form.style.display = 'none';
+
+    Object.entries(fields).forEach(([k, v]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = k;
+      input.value = v;
+      form.appendChild(input);
+    });
+    document.body.appendChild(form);
+
+    const cleanup = () => {
+      try { document.body.removeChild(form); } catch(e) {}
+      try { document.body.removeChild(iframe); } catch(e) {}
+    };
+
+    const timer = setTimeout(() => { cleanup(); resolve(); }, 10000);
+    iframe.addEventListener('load', () => { clearTimeout(timer); cleanup(); resolve(); }, { once: true });
+
+    form.submit();
+  });
 }
 
 function setDriveStatus(type, html) {
